@@ -1,0 +1,15 @@
+apply plugin: 'war'
+
+dependencies {
+
+    compile project(':pa-common')
+    compile project(':pa-dao')
+
+    compile("com.ikamobile.pa:pa-thrift:${paThriftVersion}")
+
+    //html5模板
+    compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.7.5'
+
+    // freemarker
+    compile group: 'org.freemarker', name: 'freemarker', version: '2.3.23'
+}

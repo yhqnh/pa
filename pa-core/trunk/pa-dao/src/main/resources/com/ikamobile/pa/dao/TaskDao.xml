@@ -1,0 +1,327 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<!-- 任务表 -->
+<mapper namespace="com.ikamobile.pa.dao.TaskDao">
+    
+    <sql id="pager">
+        <if test="pager != null">
+            limit ${pager.pageSize} offset ${pager.offset}
+        </if>
+    </sql>
+
+    <sql id="criteriaQueryWhere">
+        <if test="criterias != null">
+            <where>
+                <foreach collection="criterias" item="criteria" separator="OR">
+                    <if test="criteria.valid">
+                        <trim prefix="(" suffix=")" prefixOverrides="AND">
+                            <foreach collection="criteria.criterions" item="criterion">
+                                <choose>
+                                    <when test="criterion.noValue">
+                                        AND ${criterion.condition}
+                                    </when>
+                                    <when test="criterion.singleValue">
+                                        AND ${criterion.condition} #{criterion.value}
+                                    </when>
+                                    <when test="criterion.betweenValue">
+                                        AND ${criterion.condition} #{criterion.value} AND #{criterion.secondValue}
+                                    </when>
+                                    <when test="criterion.listValue">
+                                        AND ${criterion.condition}
+                                        <foreach collection="criterion.value" item="listItem"
+                                            open="(" close=")" separator=",">
+                                            #{listItem}
+                                        </foreach>
+                                    </when>
+                                </choose>
+                            </foreach>
+                        </trim>
+                    </if>
+                </foreach>
+            </where>
+        </if>
+    </sql>
+    <resultMap id="Task" type="com.ikamobile.pa.dao.model.Task">
+        <id column="id" property="id" />
+        <result column="code" property="code" />
+        <result column="status" property="status" />
+        <result column="driver_id" property="driverId" />
+        <result column="driver_name" property="driverName" />
+        <result column="vehicle_id" property="vehicleId" />
+        <result column="vehicle_num" property="vehicleNum" />
+        <result column="order_count" property="orderCount" />
+        <result column="psg_count" property="psgCount" />
+        <result column="earlist_flight_time" property="earlistFlightTime" />
+        <result column="start_time" property="startTime" />
+        <result column="finish_time" property="finishTime" />
+        <result column="create_time" property="createTime" />
+        <result column="update_time" property="updateTime" />
+    </resultMap>
+    <!-- 如果使用自定义主键，则使用如下被注释掉部分作为insert开始节点 -->
+    <!-- <insert id="insert" parameterType="java.lang.Object"> -->
+    <insert id="insert" parameterType="java.lang.Object">
+
+    <selectKey keyProperty="id" resultType="String" order="BEFORE">
+        select  uuid() from dual
+    </selectKey>
+    INSERT INTO task
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            id,
+            code,
+            status,
+            driver_id,
+            driver_name,
+            vehicle_id,
+            vehicle_num,
+            order_count,
+            psg_count,
+            earlist_flight_time,
+            start_time,
+            finish_time,
+            create_time,
+            update_time,
+        </trim>
+        VALUES
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            #{id},
+            #{code},
+            #{status},
+            #{driverId},
+            #{driverName},
+            #{vehicleId},
+            #{vehicleNum},
+            #{orderCount},
+            #{psgCount},
+            #{earlistFlightTime},
+            #{startTime},
+            #{finishTime},
+            #{createTime},
+            #{updateTime},
+        </trim>
+    </insert>
+    <!-- 如果使用自定义主键，则使用如下被注释掉部分作为insertSelective开始节点 -->
+    <!-- <insert id="insertSelective" parameterType="java.lang.Object"> -->
+    <insert id="insertSelective" parameterType="java.lang.Object">
+        <selectKey keyProperty="id" resultType="String" order="BEFORE">
+            select  uuid() from dual
+        </selectKey>
+        INSERT INTO task
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+            id,
+            </if>
+            <if test="code != null">
+            code,
+            </if>
+            <if test="status != null">
+            status,
+            </if>
+            <if test="driverId != null">
+            driver_id,
+            </if>
+            <if test="driverName != null">
+            driver_name,
+            </if>
+            <if test="vehicleId != null">
+            vehicle_id,
+            </if>
+            <if test="vehicleNum != null">
+            vehicle_num,
+            </if>
+            <if test="orderCount != null">
+            order_count,
+            </if>
+            <if test="psgCount != null">
+            psg_count,
+            </if>
+            <if test="earlistFlightTime != null">
+            earlist_flight_time,
+            </if>
+            <if test="startTime != null">
+            start_time,
+            </if>
+            <if test="finishTime != null">
+            finish_time,
+            </if>
+            <if test="createTime != null">
+            create_time,
+            </if>
+            <if test="updateTime != null">
+            update_time,
+            </if>
+        </trim>
+        <trim prefix="VALUES (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+            #{id},
+            </if>
+            <if test="code != null">
+            #{code},
+            </if>
+            <if test="status != null">
+            #{status},
+            </if>
+            <if test="driverId != null">
+            #{driverId},
+            </if>
+            <if test="driverName != null">
+            #{driverName},
+            </if>
+            <if test="vehicleId != null">
+            #{vehicleId},
+            </if>
+            <if test="vehicleNum != null">
+            #{vehicleNum},
+            </if>
+            <if test="orderCount != null">
+            #{orderCount},
+            </if>
+            <if test="psgCount != null">
+            #{psgCount},
+            </if>
+            <if test="earlistFlightTime != null">
+            #{earlistFlightTime},
+            </if>
+            <if test="startTime != null">
+            #{startTime},
+            </if>
+            <if test="finishTime != null">
+            #{finishTime},
+            </if>
+            <if test="createTime != null">
+            #{createTime},
+            </if>
+            <if test="updateTime != null">
+            #{updateTime},
+            </if>
+        </trim>
+    </insert>
+    <sql id="targetSet">
+        <set>
+            id = #{target.id},
+            code = #{target.code},
+            status = #{target.status},
+            driver_id = #{target.driverId},
+            driver_name = #{target.driverName},
+            vehicle_id = #{target.vehicleId},
+            vehicle_num = #{target.vehicleNum},
+            order_count = #{target.orderCount},
+            psg_count = #{target.psgCount},
+            earlist_flight_time = #{target.earlistFlightTime},
+            start_time = #{target.startTime},
+            finish_time = #{target.finishTime},
+            create_time = #{target.createTime},
+            update_time = #{target.updateTime},
+        </set>
+    </sql>
+    <sql id="selectiveSet">
+        <set>
+            <if test="target.id != null">
+            id = #{target.id},
+            </if>
+            <if test="target.code != null">
+            code = #{target.code},
+            </if>
+            <if test="target.status != null">
+            status = #{target.status},
+            </if>
+            <if test="target.driverId != null">
+            driver_id = #{target.driverId},
+            </if>
+            <if test="target.driverName != null">
+            driver_name = #{target.driverName},
+            </if>
+            <if test="target.vehicleId != null">
+            vehicle_id = #{target.vehicleId},
+            </if>
+            <if test="target.vehicleNum != null">
+            vehicle_num = #{target.vehicleNum},
+            </if>
+            <if test="target.orderCount != null">
+            order_count = #{target.orderCount},
+            </if>
+            <if test="target.psgCount != null">
+            psg_count = #{target.psgCount},
+            </if>
+            <if test="target.earlistFlightTime != null">
+            earlist_flight_time = #{target.earlistFlightTime},
+            </if>
+            <if test="target.startTime != null">
+            start_time = #{target.startTime},
+            </if>
+            <if test="target.finishTime != null">
+            finish_time = #{target.finishTime},
+            </if>
+            <if test="target.createTime != null">
+            create_time = #{target.createTime},
+            </if>
+            <if test="target.updateTime != null">
+            update_time = #{target.updateTime},
+            </if>
+        </set>
+    </sql>
+    <select id="countByCriteriaQuery" parameterType="com.ikamobile.pa.dao.query.CriteriaQuery"
+        resultType="java.lang.Long">
+        SELECT COUNT(*) FROM task
+        <include refid="criteriaQueryWhere" />
+    </select>
+    <select id="selectByCriteriaQuery" resultMap="Task"
+        parameterType="com.ikamobile.pa.dao.query.CriteriaQuery">
+        SELECT
+        <if test="distinct">
+            DISTINCT
+        </if>
+        'true' as QUERYID,
+        task.*
+        FROM task
+        <include refid="criteriaQueryWhere" />
+        <if test="sorts != null">
+            <trim prefix="ORDER BY ">
+            <foreach collection="sorts" item="sort" separator=",">
+                ${sort.field} ${sort.direction}
+            </foreach>
+            </trim>
+        </if>
+        <include refid="pager" />
+    </select>
+    <select id="selectById" resultMap="Task" parameterType="java.lang.String">
+        SELECT
+        task.*
+        FROM task
+        WHERE id = #{_parameter}
+    </select>
+    <select id="selectByIdForUpdate" resultMap="Task" parameterType="java.lang.String">
+        SELECT
+        task.*
+        FROM task
+        WHERE id = #{_parameter}
+        FOR UPDATE
+    </select>
+    <delete id="deleteById" parameterType="java.lang.String">
+        DELETE FROM task
+        WHERE id = #{_parameter}
+    </delete>
+    <delete id="deleteByCriteriaQuery" parameterType="com.ikamobile.pa.dao.param.DeleteByCriteriaQueryParam">
+        DELETE FROM task
+        <include refid="criteriaQueryWhere" />
+    </delete>
+    <update id="updateByCriteriaQuerySelective" parameterType="com.ikamobile.pa.dao.param.UpdateByCriteriaQueryParam">
+        UPDATE task
+        <include refid="selectiveSet" />
+        <include refid="criteriaQueryWhere" />
+    </update>
+    <update id="updateByCriteriaQuery" parameterType="com.ikamobile.pa.dao.param.UpdateByCriteriaQueryParam">
+        UPDATE task
+        <include refid="targetSet" />
+        <include refid="criteriaQueryWhere" />
+    </update>
+    <update id="updateByIdSelective" parameterType="com.ikamobile.pa.dao.param.UpdateByIdParam">
+        UPDATE task
+        <include refid="selectiveSet" />
+        WHERE id = #{id}
+    </update>
+    <update id="updateById" parameterType="com.ikamobile.pa.dao.param.UpdateByIdParam">
+        UPDATE task
+        <include refid="targetSet" />
+        WHERE id = #{id}
+    </update>
+</mapper>

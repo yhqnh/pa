@@ -1,0 +1,41 @@
+allprojects {
+    task wrapper(type: Wrapper) {
+        gradleVersion = '2.14'
+    }
+
+    apply plugin: 'java'
+    apply plugin: 'idea'
+    apply plugin: 'maven'
+
+    compileJava {
+        sourceCompatibility = 1.8
+        targetCompatibility = 1.8
+        options.encoding = "UTF-8"
+    }
+
+    configurations.all {
+        resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
+    }
+
+    repositories {
+        maven {
+            name 'companyMaven'
+            url "http://121.40.119.240:8081/nexus/content/groups/public/"
+        }
+        mavenCentral()
+        jcenter()
+    }
+
+    uploadArchives {
+        repositories {
+            mavenDeployer {
+                snapshotRepository(url: "http://repo.ikamobile.cn:8081/nexus/content/repositories/snapshots") {
+                    authentication(userName: "deployment", password: "ikamobile2416")
+                }
+                repository(url: "http://repo.ikamobile.cn:8081/nexus/content/repositories/releases") {
+                    authentication(userName: "deployment", password: "ikamobile2416")
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,216 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<!-- 城区信息 -->
+<mapper namespace="com.ikamobile.pa.dao.AreaDao">
+    
+    <sql id="pager">
+        <if test="pager != null">
+            limit ${pager.pageSize} offset ${pager.offset}
+        </if>
+    </sql>
+
+    <sql id="criteriaQueryWhere">
+        <if test="criterias != null">
+            <where>
+                <foreach collection="criterias" item="criteria" separator="OR">
+                    <if test="criteria.valid">
+                        <trim prefix="(" suffix=")" prefixOverrides="AND">
+                            <foreach collection="criteria.criterions" item="criterion">
+                                <choose>
+                                    <when test="criterion.noValue">
+                                        AND ${criterion.condition}
+                                    </when>
+                                    <when test="criterion.singleValue">
+                                        AND ${criterion.condition} #{criterion.value}
+                                    </when>
+                                    <when test="criterion.betweenValue">
+                                        AND ${criterion.condition} #{criterion.value} AND #{criterion.secondValue}
+                                    </when>
+                                    <when test="criterion.listValue">
+                                        AND ${criterion.condition}
+                                        <foreach collection="criterion.value" item="listItem"
+                                            open="(" close=")" separator=",">
+                                            #{listItem}
+                                        </foreach>
+                                    </when>
+                                </choose>
+                            </foreach>
+                        </trim>
+                    </if>
+                </foreach>
+            </where>
+        </if>
+    </sql>
+    <resultMap id="Area" type="com.ikamobile.pa.dao.model.Area">
+        <id column="id" property="id" />
+        <result column="name" property="name" />
+        <result column="code" property="code" />
+        <result column="belong_city_id" property="belongCityId" />
+        <result column="create_time" property="createTime" />
+        <result column="update_time" property="updateTime" />
+    </resultMap>
+    <!-- 如果使用自定义主键，则使用如下被注释掉部分作为insert开始节点 -->
+    <!-- <insert id="insert" parameterType="java.lang.Object"> -->
+    <insert id="insert" parameterType="java.lang.Object">
+
+    <selectKey keyProperty="id" resultType="String" order="BEFORE">
+        select  uuid() from dual
+    </selectKey>
+    INSERT INTO area
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            id,
+            name,
+            code,
+            belong_city_id,
+            create_time,
+            update_time,
+        </trim>
+        VALUES
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            #{id},
+            #{name},
+            #{code},
+            #{belongCityId},
+            #{createTime},
+            #{updateTime},
+        </trim>
+    </insert>
+    <!-- 如果使用自定义主键，则使用如下被注释掉部分作为insertSelective开始节点 -->
+    <!-- <insert id="insertSelective" parameterType="java.lang.Object"> -->
+    <insert id="insertSelective" parameterType="java.lang.Object">
+        <selectKey keyProperty="id" resultType="String" order="BEFORE">
+            select  uuid() from dual
+        </selectKey>
+        INSERT INTO area
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+            id,
+            </if>
+            <if test="name != null">
+            name,
+            </if>
+            <if test="code != null">
+            code,
+            </if>
+            <if test="belongCityId != null">
+            belong_city_id,
+            </if>
+            <if test="createTime != null">
+            create_time,
+            </if>
+            <if test="updateTime != null">
+            update_time,
+            </if>
+        </trim>
+        <trim prefix="VALUES (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+            #{id},
+            </if>
+            <if test="name != null">
+            #{name},
+            </if>
+            <if test="code != null">
+            #{code},
+            </if>
+            <if test="belongCityId != null">
+            #{belongCityId},
+            </if>
+            <if test="createTime != null">
+            #{createTime},
+            </if>
+            <if test="updateTime != null">
+            #{updateTime},
+            </if>
+        </trim>
+    </insert>
+    <sql id="targetSet">
+        <set>
+            id = #{target.id},
+            name = #{target.name},
+            code = #{target.code},
+            belong_city_id = #{target.belongCityId},
+            create_time = #{target.createTime},
+            update_time = #{target.updateTime},
+        </set>
+    </sql>
+    <sql id="selectiveSet">
+        <set>
+            <if test="target.id != null">
+            id = #{target.id},
+            </if>
+            <if test="target.name != null">
+            name = #{target.name},
+            </if>
+            <if test="target.code != null">
+            code = #{target.code},
+            </if>
+            <if test="target.belongCityId != null">
+            belong_city_id = #{target.belongCityId},
+            </if>
+            <if test="target.createTime != null">
+            create_time = #{target.createTime},
+            </if>
+            <if test="target.updateTime != null">
+            update_time = #{target.updateTime},
+            </if>
+        </set>
+    </sql>
+    <select id="countByCriteriaQuery" parameterType="com.ikamobile.pa.dao.query.CriteriaQuery"
+        resultType="java.lang.Long">
+        SELECT COUNT(*) FROM area
+        <include refid="criteriaQueryWhere" />
+    </select>
+    <select id="selectByCriteriaQuery" resultMap="Area"
+        parameterType="com.ikamobile.pa.dao.query.CriteriaQuery">
+        SELECT
+        <if test="distinct">
+            DISTINCT
+        </if>
+        'true' as QUERYID,
+        area.*
+        FROM area
+        <include refid="criteriaQueryWhere" />
+        <if test="sorts != null">
+            <trim prefix="ORDER BY ">
+            <foreach collection="sorts" item="sort" separator=",">
+                ${sort.field} ${sort.direction}
+            </foreach>
+            </trim>
+        </if>
+        <include refid="pager" />
+    </select>
+    <select id="selectById" resultMap="Area" parameterType="java.lang.String">
+        SELECT
+        area.*
+        FROM area
+        WHERE id = #{_parameter}
+    </select>
+    <delete id="deleteById" parameterType="java.lang.String">
+        DELETE FROM area
+        WHERE id = #{_parameter}
+    </delete>
+    <delete id="deleteByCriteriaQuery" parameterType="com.ikamobile.pa.dao.param.DeleteByCriteriaQueryParam">
+        DELETE FROM area
+        <include refid="criteriaQueryWhere" />
+    </delete>
+    <update id="updateByCriteriaQuerySelective" parameterType="com.ikamobile.pa.dao.param.UpdateByCriteriaQueryParam">
+        UPDATE area
+        <include refid="selectiveSet" />
+        <include refid="criteriaQueryWhere" />
+    </update>
+    <update id="updateByCriteriaQuery" parameterType="com.ikamobile.pa.dao.param.UpdateByCriteriaQueryParam">
+        UPDATE area
+        <include refid="targetSet" />
+        <include refid="criteriaQueryWhere" />
+    </update>
+    <update id="updateByIdSelective" parameterType="com.ikamobile.pa.dao.param.UpdateByIdParam">
+        UPDATE area
+        <include refid="selectiveSet" />
+        WHERE id = #{id}
+    </update>
+    <update id="updateById" parameterType="com.ikamobile.pa.dao.param.UpdateByIdParam">
+        UPDATE area
+        <include refid="targetSet" />
+        WHERE id = #{id}
+    </update>
+</mapper>

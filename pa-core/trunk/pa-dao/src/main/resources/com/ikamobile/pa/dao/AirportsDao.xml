@@ -1,0 +1,346 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<!-- 机场 -->
+<mapper namespace="com.ikamobile.pa.dao.AirportsDao">
+
+    <sql id="pager">
+        <if test="pager != null">
+            limit ${pager.pageSize} offset ${pager.offset}
+        </if>
+    </sql>
+
+    <sql id="criteriaQueryWhere">
+        <if test="criterias != null">
+            <where>
+                <foreach collection="criterias" item="criteria" separator="OR">
+                    <if test="criteria.valid">
+                        <trim prefix="(" suffix=")" prefixOverrides="AND">
+                            <foreach collection="criteria.criterions" item="criterion">
+                                <choose>
+                                    <when test="criterion.noValue">
+                                        AND ${criterion.condition}
+                                    </when>
+                                    <when test="criterion.singleValue">
+                                        AND ${criterion.condition} #{criterion.value}
+                                    </when>
+                                    <when test="criterion.betweenValue">
+                                        AND ${criterion.condition} #{criterion.value} AND #{criterion.secondValue}
+                                    </when>
+                                    <when test="criterion.listValue">
+                                        AND ${criterion.condition}
+                                        <foreach collection="criterion.value" item="listItem"
+                                                 open="(" close=")" separator=",">
+                                            #{listItem}
+                                        </foreach>
+                                    </when>
+                                </choose>
+                            </foreach>
+                        </trim>
+                    </if>
+                </foreach>
+            </where>
+        </if>
+    </sql>
+    <resultMap id="Airports" type="com.ikamobile.pa.dao.model.Airports">
+        <id column="id" property="id"/>
+        <result column="code" property="code"/>
+        <result column="full_name" property="fullName"/>
+        <result column="mini_name" property="miniName"/>
+        <result column="short_name" property="shortName"/>
+        <result column="short_name_spell" property="shortNameSpell"/>
+        <result column="city_id" property="cityId"/>
+        <result column="time_zone" property="timeZone"/>
+        <result column="latitude" property="latitude"/>
+        <result column="longitude" property="longitude"/>
+        <result column="icao_code" property="icaoCode"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="contact_tel" property="contactTel"/>
+        <result column="fax" property="fax"/>
+        <result column="email" property="email"/>
+    </resultMap>
+    <!-- 如果使用自定义主键，则使用如下被注释掉部分作为insert开始节点 -->
+    <!-- <insert id="insert" parameterType="java.lang.Object"> -->
+    <insert id="insert" parameterType="java.lang.Object">
+
+        <selectKey keyProperty="id" resultType="String" order="BEFORE">
+            select uuid() from dual
+        </selectKey>
+        INSERT INTO airports
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            id,
+            code,
+            full_name,
+            mini_name,
+            short_name,
+            short_name_spell,
+            city_id,
+            time_zone,
+            latitude,
+            longitude,
+            icao_code,
+            create_time,
+            update_time,
+            contact_tel,
+            fax,
+            email,
+        </trim>
+        VALUES
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            #{id},
+            #{code},
+            #{fullName},
+            #{miniName},
+            #{shortName},
+            #{shortNameSpell},
+            #{cityId},
+            #{timeZone},
+            #{latitude},
+            #{longitude},
+            #{icaoCode},
+            #{createTime},
+            #{updateTime},
+            #{contactTel},
+            #{fax},
+            #{email},
+        </trim>
+    </insert>
+    <!-- 如果使用自定义主键，则使用如下被注释掉部分作为insertSelective开始节点 -->
+    <!-- <insert id="insertSelective" parameterType="java.lang.Object"> -->
+    <insert id="insertSelective" parameterType="java.lang.Object">
+        <selectKey keyProperty="id" resultType="String" order="BEFORE">
+            select uuid() from dual
+        </selectKey>
+        INSERT INTO airports
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="code != null">
+                code,
+            </if>
+            <if test="fullName != null">
+                full_name,
+            </if>
+            <if test="miniName != null">
+                mini_name,
+            </if>
+            <if test="shortName != null">
+                short_name,
+            </if>
+            <if test="shortNameSpell != null">
+                short_name_spell,
+            </if>
+            <if test="cityId != null">
+                city_id,
+            </if>
+            <if test="timeZone != null">
+                time_zone,
+            </if>
+            <if test="latitude != null">
+                latitude,
+            </if>
+            <if test="longitude != null">
+                longitude,
+            </if>
+            <if test="icaoCode != null">
+                icao_code,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+            <if test="updateTime != null">
+                update_time,
+            </if>
+            <if test="contactTel != null">
+                contact_tel,
+            </if>
+            <if test="fax != null">
+                fax,
+            </if>
+            <if test="email != null">
+                email,
+            </if>
+        </trim>
+        <trim prefix="VALUES (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id},
+            </if>
+            <if test="code != null">
+                #{code},
+            </if>
+            <if test="fullName != null">
+                #{fullName},
+            </if>
+            <if test="miniName != null">
+                #{miniName},
+            </if>
+            <if test="shortName != null">
+                #{shortName},
+            </if>
+            <if test="shortNameSpell != null">
+                #{shortNameSpell},
+            </if>
+            <if test="cityId != null">
+                #{cityId},
+            </if>
+            <if test="timeZone != null">
+                #{timeZone},
+            </if>
+            <if test="latitude != null">
+                #{latitude},
+            </if>
+            <if test="longitude != null">
+                #{longitude},
+            </if>
+            <if test="icaoCode != null">
+                #{icaoCode},
+            </if>
+            <if test="createTime != null">
+                #{createTime},
+            </if>
+            <if test="updateTime != null">
+                #{updateTime},
+            </if>
+            <if test="contactTel != null">
+                #{contactTel},
+            </if>
+            <if test="fax != null">
+                #{fax},
+            </if>
+            <if test="email != null">
+                #{email},
+            </if>
+        </trim>
+    </insert>
+    <sql id="targetSet">
+        <set>
+            id = #{target.id},
+            code = #{target.code},
+            full_name = #{target.fullName},
+            mini_name = #{target.miniName},
+            short_name = #{target.shortName},
+            short_name_spell = #{target.shortNameSpell},
+            city_id = #{target.cityId},
+            time_zone = #{target.timeZone},
+            latitude = #{target.latitude},
+            longitude = #{target.longitude},
+            icao_code = #{target.icaoCode},
+            create_time = #{target.createTime},
+            update_time = #{target.updateTime},
+            contact_tel = #{target.contactTel},
+            fax = #{target.fax},
+            email = #{target.email},
+        </set>
+    </sql>
+    <sql id="selectiveSet">
+        <set>
+            <if test="target.id != null">
+                id = #{target.id},
+            </if>
+            <if test="target.code != null">
+                code = #{target.code},
+            </if>
+            <if test="target.fullName != null">
+                full_name = #{target.fullName},
+            </if>
+            <if test="target.miniName != null">
+                mini_name = #{target.miniName},
+            </if>
+            <if test="target.shortName != null">
+                short_name = #{target.shortName},
+            </if>
+            <if test="target.shortNameSpell != null">
+                short_name_spell = #{target.shortNameSpell},
+            </if>
+            <if test="target.cityId != null">
+                city_id = #{target.cityId},
+            </if>
+            <if test="target.timeZone != null">
+                time_zone = #{target.timeZone},
+            </if>
+            <if test="target.latitude != null">
+                latitude = #{target.latitude},
+            </if>
+            <if test="target.longitude != null">
+                longitude = #{target.longitude},
+            </if>
+            <if test="target.icaoCode != null">
+                icao_code = #{target.icaoCode},
+            </if>
+            <if test="target.createTime != null">
+                create_time = #{target.createTime},
+            </if>
+            <if test="target.updateTime != null">
+                update_time = #{target.updateTime},
+            </if>
+            <if test="target.contactTel != null">
+                contact_tel = #{target.contactTel},
+            </if>
+            <if test="target.fax != null">
+                fax = #{target.fax},
+            </if>
+            <if test="target.email != null">
+                email = #{target.email},
+            </if>
+        </set>
+    </sql>
+    <select id="countByCriteriaQuery" parameterType="com.ikamobile.pa.dao.query.CriteriaQuery"
+            resultType="java.lang.Long">
+        SELECT COUNT(*) FROM airports
+        <include refid="criteriaQueryWhere"/>
+    </select>
+    <select id="selectByCriteriaQuery" resultMap="Airports"
+            parameterType="com.ikamobile.pa.dao.query.CriteriaQuery">
+        SELECT
+        <if test="distinct">
+            DISTINCT
+        </if>
+        'true' as QUERYID,
+        airports.*
+        FROM airports
+        <include refid="criteriaQueryWhere"/>
+        <if test="sorts != null">
+            <trim prefix="ORDER BY ">
+                <foreach collection="sorts" item="sort" separator=",">
+                    ${sort.field} ${sort.direction}
+                </foreach>
+            </trim>
+        </if>
+        <include refid="pager"/>
+    </select>
+    <select id="selectById" resultMap="Airports" parameterType="java.lang.String">
+        SELECT
+        airports.*
+        FROM airports
+        WHERE id = #{_parameter}
+    </select>
+    <delete id="deleteById" parameterType="java.lang.String">
+        DELETE FROM airports
+        WHERE id = #{_parameter}
+    </delete>
+    <delete id="deleteByCriteriaQuery" parameterType="com.ikamobile.pa.dao.param.DeleteByCriteriaQueryParam">
+        DELETE FROM airports
+        <include refid="criteriaQueryWhere"/>
+    </delete>
+    <update id="updateByCriteriaQuerySelective" parameterType="com.ikamobile.pa.dao.param.UpdateByCriteriaQueryParam">
+        UPDATE airports
+        <include refid="selectiveSet"/>
+        <include refid="criteriaQueryWhere"/>
+    </update>
+    <update id="updateByCriteriaQuery" parameterType="com.ikamobile.pa.dao.param.UpdateByCriteriaQueryParam">
+        UPDATE airports
+        <include refid="targetSet"/>
+        <include refid="criteriaQueryWhere"/>
+    </update>
+    <update id="updateByIdSelective" parameterType="com.ikamobile.pa.dao.param.UpdateByIdParam">
+        UPDATE airports
+        <include refid="selectiveSet"/>
+        WHERE id = #{id}
+    </update>
+    <update id="updateById" parameterType="com.ikamobile.pa.dao.param.UpdateByIdParam">
+        UPDATE airports
+        <include refid="targetSet"/>
+        WHERE id = #{id}
+    </update>
+</mapper>

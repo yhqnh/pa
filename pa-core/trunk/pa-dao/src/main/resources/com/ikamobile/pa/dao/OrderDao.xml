@@ -1,0 +1,450 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<!-- 订单表 -->
+<mapper namespace="com.ikamobile.pa.dao.OrderDao">
+
+    <sql id="pager">
+        <if test="pager != null">
+            limit ${pager.pageSize} offset ${pager.offset}
+        </if>
+    </sql>
+
+    <sql id="criteriaQueryWhere">
+        <if test="criterias != null">
+            <where>
+                <foreach collection="criterias" item="criteria" separator="OR">
+                    <if test="criteria.valid">
+                        <trim prefix="(" suffix=")" prefixOverrides="AND">
+                            <foreach collection="criteria.criterions" item="criterion">
+                                <choose>
+                                    <when test="criterion.noValue">
+                                        AND ${criterion.condition}
+                                    </when>
+                                    <when test="criterion.singleValue">
+                                        AND ${criterion.condition} #{criterion.value}
+                                    </when>
+                                    <when test="criterion.betweenValue">
+                                        AND ${criterion.condition} #{criterion.value} AND #{criterion.secondValue}
+                                    </when>
+                                    <when test="criterion.listValue">
+                                        AND ${criterion.condition}
+                                        <foreach collection="criterion.value" item="listItem"
+                                                 open="(" close=")" separator=",">
+                                            #{listItem}
+                                        </foreach>
+                                    </when>
+                                </choose>
+                            </foreach>
+                        </trim>
+                    </if>
+                </foreach>
+            </where>
+        </if>
+    </sql>
+    <resultMap id="Order" type="com.ikamobile.pa.dao.model.Order">
+        <id column="id" property="id" />
+        <result column="code" property="code" />
+        <result column="booker_id" property="bookerId" />
+        <result column="aboard_long" property="aboardLong" />
+        <result column="aboard_lati" property="aboardLati" />
+        <result column="aboard_area_id" property="aboardAreaId" />
+        <result column="aboard_place" property="aboardPlace" />
+        <result column="arr_airport_id" property="arrAirportId" />
+        <result column="arr_place" property="arrPlace" />
+        <result column="status" property="status" />
+        <result column="flight_number" property="flightNumber" />
+        <result column="passenger_num" property="passengerNum" />
+        <result column="flight_dep_time" property="flightDepTime" />
+        <result column="expect_board_time" property="expectBoardTime" />
+        <result column="actual_board_time" property="actualBoardTime" />
+        <result column="arr_time" property="arrTime" />
+        <result column="task_id" property="taskId" />
+        <result column="online" property="online" />
+        <result column="operator_id" property="operatorId" />
+        <result column="lock_key" property="lockKey" />
+        <result column="vehicle_code" property="vehicleCode" />
+        <result column="voucher_code" property="voucherCode" />
+        <result column="create_time" property="createTime" />
+        <result column="update_time" property="updateTime" />
+    </resultMap>
+    <!-- 如果使用自定义主键，则使用如下被注释掉部分作为insert开始节点 -->
+    <!-- <insert id="insert" parameterType="java.lang.Object"> -->
+    <insert id="insert" parameterType="java.lang.Object">
+
+        <selectKey keyProperty="id" resultType="String" order="BEFORE">
+            select  uuid() from dual
+        </selectKey>
+        INSERT INTO `order`
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            id,
+            code,
+            booker_id,
+            aboard_long,
+            aboard_lati,
+            aboard_area_id,
+            aboard_place,
+            arr_airport_id,
+            arr_place,
+            status,
+            flight_number,
+            passenger_num,
+            flight_dep_time,
+            expect_board_time,
+            actual_board_time,
+            arr_time,
+            task_id,
+            online,
+            operator_id,
+            lock_key,
+            vehicle_code,
+            voucher_code,
+            create_time,
+            update_time,
+        </trim>
+        VALUES
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            #{id},
+            #{code},
+            #{bookerId},
+            #{aboardLong},
+            #{aboardLati},
+            #{aboardAreaId},
+            #{aboardPlace},
+            #{arrAirportId},
+            #{arrPlace},
+            #{status},
+            #{flightNumber},
+            #{passengerNum},
+            #{flightDepTime},
+            #{expectBoardTime},
+            #{actualBoardTime},
+            #{arrTime},
+            #{taskId},
+            #{online},
+            #{operatorId},
+            #{lockKey},
+            #{vehicleCode},
+            #{voucherCode},
+            #{createTime},
+            #{updateTime},
+        </trim>
+    </insert>
+    <!-- 如果使用自定义主键，则使用如下被注释掉部分作为insertSelective开始节点 -->
+    <!-- <insert id="insertSelective" parameterType="java.lang.Object"> -->
+    <insert id="insertSelective" parameterType="java.lang.Object">
+        <selectKey keyProperty="id" resultType="String" order="BEFORE">
+            select  uuid() from dual
+        </selectKey>
+        INSERT INTO `order`
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="code != null">
+                code,
+            </if>
+            <if test="bookerId != null">
+                booker_id,
+            </if>
+            <if test="aboardLong != null">
+                aboard_long,
+            </if>
+            <if test="aboardLati != null">
+                aboard_lati,
+            </if>
+            <if test="aboardAreaId != null">
+                aboard_area_id,
+            </if>
+            <if test="aboardPlace != null">
+                aboard_place,
+            </if>
+            <if test="arrAirportId != null">
+                arr_airport_id,
+            </if>
+            <if test="arrPlace != null">
+                arr_place,
+            </if>
+            <if test="status != null">
+                status,
+            </if>
+            <if test="flightNumber != null">
+                flight_number,
+            </if>
+            <if test="passengerNum != null">
+                passenger_num,
+            </if>
+            <if test="flightDepTime != null">
+                flight_dep_time,
+            </if>
+            <if test="expectBoardTime != null">
+                expect_board_time,
+            </if>
+            <if test="actualBoardTime != null">
+                actual_board_time,
+            </if>
+            <if test="arrTime != null">
+                arr_time,
+            </if>
+            <if test="taskId != null">
+                task_id,
+            </if>
+            <if test="online != null">
+                online,
+            </if>
+            <if test="operatorId != null">
+            operator_id,
+            </if>
+            <if test="lockKey != null">
+            lock_key,
+            </if>
+            <if test="vehicleCode != null">
+            vehicle_code,
+            </if>
+            <if test="voucherCode != null">
+                voucher_code,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+            <if test="updateTime != null">
+                update_time,
+            </if>
+        </trim>
+        <trim prefix="VALUES (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id},
+            </if>
+            <if test="code != null">
+                #{code},
+            </if>
+            <if test="bookerId != null">
+                #{bookerId},
+            </if>
+            <if test="aboardLong != null">
+                #{aboardLong},
+            </if>
+            <if test="aboardLati != null">
+                #{aboardLati},
+            </if>
+            <if test="aboardAreaId != null">
+                #{aboardAreaId},
+            </if>
+            <if test="aboardPlace != null">
+                #{aboardPlace},
+            </if>
+            <if test="arrAirportId != null">
+                #{arrAirportId},
+            </if>
+            <if test="arrPlace != null">
+                #{arrPlace},
+            </if>
+            <if test="status != null">
+                #{status},
+            </if>
+            <if test="flightNumber != null">
+                #{flightNumber},
+            </if>
+            <if test="passengerNum != null">
+                #{passengerNum},
+            </if>
+            <if test="flightDepTime != null">
+                #{flightDepTime},
+            </if>
+            <if test="expectBoardTime != null">
+                #{expectBoardTime},
+            </if>
+            <if test="actualBoardTime != null">
+                #{actualBoardTime},
+            </if>
+            <if test="arrTime != null">
+                #{arrTime},
+            </if>
+            <if test="taskId != null">
+                #{taskId},
+            </if>
+            <if test="online != null">
+                #{online},
+            </if>
+            <if test="operatorId != null">
+            #{operatorId},
+            </if>
+            <if test="lockKey != null">
+            #{lockKey},
+            </if>
+            <if test="vehicleCode != null">
+            #{vehicleCode},
+            </if>
+            <if test="voucherCode != null">
+                #{voucherCode},
+            </if>
+            <if test="createTime != null">
+                #{createTime},
+            </if>
+            <if test="updateTime != null">
+                #{updateTime},
+            </if>
+        </trim>
+    </insert>
+    <sql id="targetSet">
+        <set>
+            id = #{target.id},
+            code = #{target.code},
+            booker_id = #{target.bookerId},
+            aboard_long = #{target.aboardLong},
+            aboard_lati = #{target.aboardLati},
+            aboard_area_id = #{target.aboardAreaId},
+            aboard_place = #{target.aboardPlace},
+            arr_airport_id = #{target.arrAirportId},
+            arr_place = #{target.arrPlace},
+            status = #{target.status},
+            flight_number = #{target.flightNumber},
+            passenger_num = #{target.passengerNum},
+            flight_dep_time = #{target.flightDepTime},
+            expect_board_time = #{target.expectBoardTime},
+            actual_board_time = #{target.actualBoardTime},
+            arr_time = #{target.arrTime},
+            task_id = #{target.taskId},
+            online = #{target.online},
+            operator_id = #{target.operatorId},
+            lock_key = #{target.lockKey},
+            vehicle_code = #{target.vehicleCode},
+            voucher_code = #{target.voucherCode},
+            create_time = #{target.createTime},
+            update_time = #{target.updateTime},
+        </set>
+    </sql>
+    <sql id="selectiveSet">
+        <set>
+            <if test="target.id != null">
+                id = #{target.id},
+            </if>
+            <if test="target.code != null">
+                code = #{target.code},
+            </if>
+            <if test="target.bookerId != null">
+                booker_id = #{target.bookerId},
+            </if>
+            <if test="target.aboardLong != null">
+                aboard_long = #{target.aboardLong},
+            </if>
+            <if test="target.aboardLati != null">
+                aboard_lati = #{target.aboardLati},
+            </if>
+            <if test="target.aboardAreaId != null">
+                aboard_area_id = #{target.aboardAreaId},
+            </if>
+            <if test="target.aboardPlace != null">
+                aboard_place = #{target.aboardPlace},
+            </if>
+            <if test="target.arrAirportId != null">
+                arr_airport_id = #{target.arrAirportId},
+            </if>
+            <if test="target.arrPlace != null">
+                arr_place = #{target.arrPlace},
+            </if>
+            <if test="target.status != null">
+                status = #{target.status},
+            </if>
+            <if test="target.flightNumber != null">
+                flight_number = #{target.flightNumber},
+            </if>
+            <if test="target.passengerNum != null">
+                passenger_num = #{target.passengerNum},
+            </if>
+            <if test="target.flightDepTime != null">
+                flight_dep_time = #{target.flightDepTime},
+            </if>
+            <if test="target.expectBoardTime != null">
+                expect_board_time = #{target.expectBoardTime},
+            </if>
+            <if test="target.actualBoardTime != null">
+                actual_board_time = #{target.actualBoardTime},
+            </if>
+            <if test="target.arrTime != null">
+                arr_time = #{target.arrTime},
+            </if>
+            <if test="target.taskId != null">
+                task_id = #{target.taskId},
+            </if>
+            <if test="target.online != null">
+                online = #{target.online},
+            </if>
+            <if test="target.operatorId != null">
+            operator_id = #{target.operatorId},
+            </if>
+            <if test="target.lockKey != null">
+            lock_key = #{target.lockKey},
+            </if>
+            <if test="target.vehicleCode != null">
+            vehicle_code = #{target.vehicleCode},
+            </if>
+            <if test="target.voucherCode != null">
+                voucher_code = #{target.voucherCode},
+            </if>
+            <if test="target.createTime != null">
+                create_time = #{target.createTime},
+            </if>
+            <if test="target.updateTime != null">
+                update_time = #{target.updateTime},
+            </if>
+        </set>
+    </sql>
+    <select id="countByCriteriaQuery" parameterType="com.ikamobile.pa.dao.query.CriteriaQuery"
+            resultType="java.lang.Long">
+        SELECT COUNT(*) FROM `order`
+        <include refid="criteriaQueryWhere" />
+    </select>
+    <select id="selectByCriteriaQuery" resultMap="Order"
+            parameterType="com.ikamobile.pa.dao.query.CriteriaQuery">
+        SELECT
+        <if test="distinct">
+            DISTINCT
+        </if>
+        'true' as QUERYID,
+        `order`.*
+        FROM `order`
+        <include refid="criteriaQueryWhere" />
+        <if test="sorts != null">
+            <trim prefix="ORDER BY ">
+                <foreach collection="sorts" item="sort" separator=",">
+                    ${sort.field} ${sort.direction}
+                </foreach>
+            </trim>
+        </if>
+        <include refid="pager" />
+    </select>
+    <select id="selectById" resultMap="Order" parameterType="java.lang.String">
+        SELECT
+        `order`.*
+        FROM `order`
+        WHERE id = #{_parameter}
+    </select>
+    <delete id="deleteById" parameterType="java.lang.String">
+        DELETE FROM `order`
+        WHERE id = #{_parameter}
+    </delete>
+    <delete id="deleteByCriteriaQuery" parameterType="com.ikamobile.pa.dao.param.DeleteByCriteriaQueryParam">
+        DELETE FROM `order`
+        <include refid="criteriaQueryWhere" />
+    </delete>
+    <update id="updateByCriteriaQuerySelective" parameterType="com.ikamobile.pa.dao.param.UpdateByCriteriaQueryParam">
+        UPDATE `order`
+        <include refid="selectiveSet" />
+        <include refid="criteriaQueryWhere" />
+    </update>
+    <update id="updateByCriteriaQuery" parameterType="com.ikamobile.pa.dao.param.UpdateByCriteriaQueryParam">
+        UPDATE `order`
+        <include refid="targetSet" />
+        <include refid="criteriaQueryWhere" />
+    </update>
+    <update id="updateByIdSelective" parameterType="com.ikamobile.pa.dao.param.UpdateByIdParam">
+        UPDATE `order`
+        <include refid="selectiveSet" />
+        WHERE id = #{id}
+    </update>
+    <update id="updateById" parameterType="com.ikamobile.pa.dao.param.UpdateByIdParam">
+        UPDATE `order`
+        <include refid="targetSet" />
+        WHERE id = #{id}
+    </update>
+</mapper>
